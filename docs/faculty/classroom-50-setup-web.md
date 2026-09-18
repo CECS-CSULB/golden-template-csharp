@@ -8,38 +8,10 @@ By the end you will have a real assignment that students can accept, and you
 will have **proved** it grades correctly rather than assumed it.
 
 > [!TIP]
-> Prefer the terminal? Use [Getting started with the CLI](getting-started.md).
+> Prefer the terminal? Use [Getting started with the CLI](classroom-50-setup.md).
 > Already know Classroom 50? You want the upstream
 > [Web Teacher Guide](https://github.com/foundation50/classroom50/wiki/Web-Teacher-Guide)
 > instead. This is the ground-up version.
-
----
-
-## What you are actually building
-
-Three moving parts. The confusion beginners hit is not knowing which is which.
-
-```mermaid
-flowchart LR
-    A["<b>Config repo</b><br/><code>org/classroom50</code><br/><i>private · Classroom 50 manages it</i>"]
-    B["<b>Template repo</b><br/>starter code + tests<br/><i>you build it on GitHub</i>"]
-    C["<b>Student repo</b><br/>one per student<br/><i>graded on push</i>"]
-    A -- "names the template" --> B
-    B -- "copied on accept" --> C
-    C -- "scores collected back" --> A
-```
-
-| Part | What it is | Who touches it |
-|---|---|---|
-| **Config repo** | `<org>/classroom50`. Holds the roster, assignment list, and grading rules. Created for you during organization setup. | Classroom 50, through the Web UI |
-| **Template repo** | An ordinary repo with starter code and tests, flagged as a GitHub template. | You, on GitHub |
-| **Student repo** | A copy made when a student accepts. Graded automatically on push. | The student |
-
-> [!WARNING]
-> **The most common beginner misconception:** that putting tests in the template
-> is enough. It isn't. The template holds the test *files*; the assignment form
-> holds the instruction to *run* them. Miss the second and nothing meaningful is
-> graded. See [step 6](#step-6--tell-it-how-to-grade).
 
 ---
 
@@ -90,28 +62,25 @@ will not work.
 This is the assignment content. Make an ordinary GitHub repository containing:
 
 ```
-src/            starter code, functions unimplemented
-tests/          the test suite
-docs/           instructions for students
-README.md
+src/                    class library and console projects
+  Library/
+  ConsoleApplication/
+tests/                  xUnit test projects
+  StatisticsTests/
+golden-template-csharp.sln
+global.json             .NET 10 SDK and test-runner selection
+STUDENT_README.md       assignment requirements
 ```
 
 Then, on GitHub, open **Settings → General**, find **Template repository**, and
 check it.
 
-Two rules that will save you an afternoon:
-
-1. **Stubs must `raise`, not `pass`.** A `pass` stub returns `None`, so "hasn't
-   started" and "got it wrong" look identical in the gradebook.
-2. **Visibility.** Public always works. Private works only if it is *inside*
-   your organization. A private template outside the org is rejected.
-
 **Don't build one from scratch the first time.** Use **this repository**: click
 **Use this template** on
-[cecs-golden-template-python](https://github.com/Giacalone-CECS/cecs-golden-template-python).
+[golden-template-csharp](https://github.com/csulb-cecs-demo/cecs-golden-template-csharp).
 It has the layout, a working suite, CI, and a Verification Log, and every file
 carries `FACULTY:` comments explaining why it is shaped that way. See
-[the repo README](../README.md) for what to keep and what to change.
+[the repo README](../../README.md) for what to keep and what to change.
 
 ---
 
@@ -166,8 +135,7 @@ On the classroom page, click **+ Assignment**. Enter:
 Under **Repository setup**:
 
 1. Choose **Template repository** for **Start with a template**.
-2. Enter `Giacalone-CECS/cecs-golden-template-python`, or the
-   `<owner>/<repo>` name of the copy you made in step 2.
+2. Enter the `<owner>/<repo>` name of the C# template copy you made in step 2.
 3. Leave **Include all branches** off unless students need more than the
    template's default branch.
 4. Leave **Feedback pull request** on if you want a ready-made place for inline
@@ -191,29 +159,31 @@ Under **Grading and submissions**:
 3. Leave **Submission type** at **Every push to the default branch** for this
    first assignment.
 
-Under **Advanced settings**, set the assignment **Setup command** to:
+Under **Advanced settings**, set the assignment **Setup command** to restore and
+build the solution:
 
 ```sh
-python3 -m pip install --quiet -r requirements.txt
+dotnet restore golden-template-csharp.sln
+dotnet build golden-template-csharp.sln --configuration Release --no-restore
 ```
 
-Leave its timeout at 120 seconds. Then add these two tests under **Autograding
+Leave its timeout at 120 seconds. Then add this test under **Autograding
 tests**:
 
-| Field | Import test | Pytest suite |
-|---|---|---|
-| **Test name** | `module imports` | `pytest suite` |
-| **Test type** | Run command | Python (pytest) |
-| **Run command** | `python3 -c "import src.stats"` | `python3 -m pytest -q tests/test_stats.py` |
-| **Required exit code** | `0` | — |
-| **Timeout** | `10` | `120` |
-| **Points** | `1` | `12` |
+| Field | xUnit suite |
+|---|---|
+| **Test name** | `xUnit suite` |
+| **Test type** | Run command |
+| **Run command** | `dotnet test --solution golden-template-csharp.sln --configuration Release --no-build` |
+| **Required exit code** | `0` |
+| **Timeout** | `120` |
+| **Points** | Set according to the assignment rubric |
 
-Click **Add test** for each one and save it. You should see two tests worth 13
-points total. The Python test's 12 points are split across its pytest cases
-automatically: 9 of 12 passing scores 9. The 1-point import test exists so that
-a broken import is reported as "your module doesn't import" instead of twelve
-confusing downstream errors.
+Click **Add test**, save it, and confirm that the test appears in the assignment.
+Restore and compilation failures occur during setup; assertion failures are
+reported by xUnit with the individual test names. Because this is a Run command
+test, its points are awarded by the overall exit code rather than split across
+the five xUnit cases.
 
 Now click **Create assignment**.
 
@@ -241,8 +211,8 @@ Full detail on test types and weighting:
 3. Click **Accept assignment**. Classroom 50 creates a student repository and
    shows a link to it.
 4. Clone that repository with GitHub Desktop, your IDE, or Git.
-5. Deliberately break something: delete a function body, or leave the starter
-   untouched, since this template's stubs already raise.
+5. Deliberately break something: change one function to return an incorrect
+   result, or leave the starter implementation incomplete.
 6. Commit and push the deliberately wrong version.
 7. In Classroom 50, open the assignment, choose **My submission**, and click
    **View grade**; or open the repository's **Actions** tab and inspect the
@@ -294,7 +264,7 @@ Classroom 50.
 |---|---|
 | Write more interesting tests | [Writing tests with the Web UI](writing-tests-web.md) |
 | Diagnose something broken | [Troubleshooting](troubleshooting.md) |
-| Adapt this template to your course | [Template README](../README.md) |
+| Adapt this template to your course | [Template README](../../README.md) |
 | Look up a Web UI feature | [Web Teacher Guide](https://github.com/foundation50/classroom50/wiki/Web-Teacher-Guide) |
 | See the student Web UI | [Web Student Guide](https://github.com/foundation50/classroom50/wiki/Web-Student-Guide) |
 | Grade something declarative tests cannot express | [Autograders wiki](https://github.com/foundation50/classroom50/wiki/Autograders) |

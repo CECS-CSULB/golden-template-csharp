@@ -24,7 +24,7 @@ jobs:
       - name: Install .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Restore dependencies
         run: dotnet restore golden-template-csharp.sln
@@ -33,7 +33,7 @@ jobs:
         run: dotnet build golden-template-csharp.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test golden-template-csharp.sln --configuration Release --no-build --verbosity normal
+        run: dotnet test --solution golden-template-csharp.sln --configuration Release --no-build --verbosity normal
 
       - name: Check the Verification Log was filled in
         if: always()

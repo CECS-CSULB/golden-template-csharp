@@ -7,7 +7,7 @@ name: Core Standard
 #    fork the framework for course-specific needs without compromising the
 #    integrity of the 'Core Standard.'"
 #
-# docs/governance.md is that strategy. This workflow reports against it.
+# docs/faculty/governance.md is that strategy. This workflow reports against it.
 #
 # ------------------------------------------------------------------------------
 # FACULTY: this is ADVISORY. It will not fail your build.
@@ -66,6 +66,6 @@ jobs:
             cat baseline.txt 2>/dev/null || echo "(no report produced)"
             echo '```'
             echo ""
-            echo "See [docs/governance.md](docs/governance.md) for what each"
+            echo "See [docs/faculty/governance.md](docs/faculty/governance.md) for what each"
             echo "recommendation is for, so you can decide whether it applies to you."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -21,7 +21,7 @@ instead. That choice is yours to make, per course, and the default assumes you
 have not made it.
 
 The rules below are written as data so you can read what is recommended without
-reading Python. docs/governance.md is the human-readable half — keep them in
+reading Python. docs/faculty/governance.md is the human-readable half — keep them in
 sync if you change either.
 
 Deliberately language-agnostic: a course that adapts this to Node or Java
@@ -52,7 +52,7 @@ import sys
 #
 # And the listed items are yours too. These are recommendations with reasons
 # attached; if a reason does not apply to your course, the recommendation does
-# not either. See docs/governance.md.
+# not either. See docs/faculty/governance.md.
 # --------------------------------------------------------------------------
 
 TEST_FILE_PATTERNS = [
@@ -218,7 +218,7 @@ def main() -> int:
             print("Matches the recommended baseline.")
         else:
             print(f"{len(gaps)} item(s) differ from the recommended baseline.")
-            print("That may be exactly right for your course. See docs/governance.md")
+            print("That may be exactly right for your course. See docs/faculty/governance.md")
             print("for what each recommendation is for, so you can decide.")
         if not args.strict and gaps:
             print("\nAdvisory run — exiting 0. Use --strict to make gaps fail.")

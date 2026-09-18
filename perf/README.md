@@ -45,7 +45,7 @@ uncomment the `push:` trigger in `perf.yml`.
 
 Why opt-in rather than always-on: a green check that attests to nothing is
 worse than no check. It devalues every real green badge next to it, and that is
-[exactly how an autograder came to silently pass every submission](../docs/troubleshooting.md#everything-passes-including-work-that-should-fail).
+[exactly how an autograder came to silently pass every submission](../docs/faculty/troubleshooting.md#everything-passes-including-work-that-should-fail).
 
 ## What it does not test
 

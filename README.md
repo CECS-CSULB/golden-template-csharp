@@ -1,69 +1,88 @@
-# CECS Golden Template — C# Project with xUnit Tests
+# Guidance for Faculty
 
-A small .NET console program reads ten integers and prints their mean and
-median. The repository is organized as a reusable class library, a console
-application, and one xUnit test library.
+This template contains a C# solution targeting .NET 10.0, with a reusable
+class library, a console application, and an xUnit v3 test project. GitHub
+Actions restores, builds, and tests the solution on every push. The repository
+can be used with Classroom 50 as an auto-graded assignment template or given
+to students to fork when auto-grading is not needed.
 
-> [!NOTE]
-> Files in this repo carry 'FACULTY:' comments explaining why each piece is the
-> way it is. They are written for whoever adapts this next. Students can ignore
-> them, and you can strip them once your own version settles.
+The [faculty documentation](docs/faculty/README.md) explains how to adapt the
+starter code, write tests, and optionally configure Classroom 50. Before
+publishing an assignment to students, remove `docs/faculty` and this faculty
+section if they would cause confusion.
 
-## Layout
+## Faculty To-Do
 
-| Path | What goes here |
+1. Replace the sample statistics code under `src/` with the assignment's
+   starter code.
+2. Replace the xUnit tests under `tests/` and keep project references aligned
+   with the source projects they exercise.
+3. Edit [STUDENT_README.md](STUDENT_README.md) with assignment-specific
+   requirements and review the guides in
+   [docs/student](docs/student/README.md).
+4. Review package references in each `.csproj`; retain only dependencies the
+   assignment uses.
+5. Review the warning below and decide whether to keep the student publishing
+   guide.
+6. Read the [faculty documentation](docs/faculty/README.md) to understand the
+   solution layout, CI commands, and optional Classroom 50 integration.
+7. Create a GitHub template repository for the assignment, if needed.
+8. If AI assistance is allowed, review or adapt the root
+   [Verification Log](VERIFICATION-LOG.md); a clean faculty copy is available
+   at [docs/faculty/VERIFICATION-LOG.md](docs/faculty/VERIFICATION-LOG.md).
+9. Remove faculty-only documentation, then commit and push the assignment.
+
+## Language-specific notes
+
+The solution uses the .NET 10 SDK and xUnit.net v3. Its projects are:
+
+| Project | Purpose |
 |---|---|
-| src/Library/ | Statistics.Mean and Statistics.Median. |
-| src/ConsoleApplication/ | The console application that reads and reports ten integers. |
-| tests/StatisticsTests/ | The xUnit test suite for the library. |
-| docs/ | Assignment and faculty guidance. |
-| VERIFICATION-LOG.md | Required record of verification and AI assistance. |
-| .github/workflows/ci.yml | Builds the solution and runs the tests on every push. |
+| [`src/Library/Library.csproj`](src/Library/Library.csproj) | Reusable assignment logic. The sample `Statistics` class implements mean and median. |
+| [`src/ConsoleApplication/ConsoleApplication.csproj`](src/ConsoleApplication/ConsoleApplication.csproj) | Demonstration program. It references `Library`. |
+| [`tests/StatisticsTests/StatisticsTests.csproj`](tests/StatisticsTests/StatisticsTests.csproj) | Five xUnit tests. It references `Library`. |
 
-## Start here
+[`golden-template-csharp.sln`](golden-template-csharp.sln) groups all three
+projects. Every project targets `net10.0`, enables nullable reference analysis,
+and uses implicit global `using` directives.
 
-Install the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0),
-then run these commands from the repository root:
+[`global.json`](global.json) selects a .NET 10 SDK and opts `dotnet test` into
+Microsoft Testing Platform, which is embedded by xUnit v3. Run the complete
+local workflow from the repository root:
 
-~~~text
-dotnet restore
-dotnet build --configuration Release --no-restore
-dotnet test --configuration Release --no-build
-~~~
+```powershell
+dotnet restore golden-template-csharp.sln
+dotnet build golden-template-csharp.sln --configuration Release --no-restore
+dotnet test --solution golden-template-csharp.sln --configuration Release --no-build
+```
 
-Run the demonstration with:
+Run the sample application with:
 
-~~~text
+```powershell
 dotnet run --project src/ConsoleApplication --configuration Release
-~~~
+```
 
-Example:
+When adding or renaming projects, update the solution, `ProjectReference`
+elements, GitHub Actions commands, Classroom 50 commands, and documentation
+together. See [BUILDING.md](BUILDING.md) for the concise build instructions.
 
-~~~text
-Enter 10 integers:
-1 2 3 4 5 6 7 8 9 10
-Mean: 5.5
-Median: 5.5
-~~~
+## Warning about student documentation
 
-## For students
+The file [docs/student/publishing.md](docs/student/publishing.md) walks students
+through publishing an approved copy of their completed assignment to a public
+GitHub profile. It tells them to wait until the semester is over, obtain the
+instructor's permission, and remove private course material first.
 
-Implement or adapt the functions in src/Library/Statistics.cs, keep the
-public API used by the tests, and run dotnet test before pushing. Fill in
-VERIFICATION-LOG.md before submitting.
+If students should not publish completed work, replace that guide with the
+course's policy. Consider explaining how students may describe the work on a
+résumé or portfolio without releasing the source.
 
-## For instructors
+# Guidance for Students
 
-The xUnit suite is intentionally small and visible. Replace the sample
-assignment and tests with course-specific work while keeping the same
-solution shape. Before handing an assignment to students, submit one
-deliberately wrong solution and confirm that the test workflow turns red.
+This assignment is derived from the CSULB CECS Department Golden Template, a
+starting point for faculty to create programming assignments that use a
+repeatable project layout, automated tests, and continuous integration.
 
-The repository also includes the language-neutral
-[getting-started](docs/getting-started.md), [testing](docs/writing-tests.md),
-[troubleshooting](docs/troubleshooting.md), and
-[governance](docs/governance.md) guides.
-
-## License
-
-[MIT](LICENSE)
+Read [STUDENT_README.md](STUDENT_README.md) first for the assignment
+requirements. Then use [docs/student/README.md](docs/student/README.md) for
+setup, Git, development, README-writing, and publishing guides.

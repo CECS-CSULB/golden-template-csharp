@@ -8,7 +8,7 @@ By the end you will have a real assignment that students can accept, and you
 will have **proved** it grades correctly rather than assumed it.
 
 > [!TIP]
-> Prefer the browser? Use [Getting started with the Web UI](getting-started-web.md).
+> Prefer the browser? Use [Getting started with the Web UI](classroom-50-setup-web.md).
 >
 > Already know Classroom 50? You want the
 > [CLI Teacher Guide](https://github.com/foundation50/classroom50/wiki/CLI-Teacher-Guide)
@@ -103,27 +103,29 @@ Personal access tokens → Fine-grained tokens**.
 This is the assignment content. Make an ordinary repo containing:
 
 ```
-src/            starter code, functions unimplemented
-tests/          the test suite
-docs/           instructions for students
-README.md
+golden-template-csharp.sln
+src/            C# library and console application projects
+tests/          xUnit test project
+docs/           faculty and student guidance
+README.md       faculty-facing template guide
+STUDENT_README.md
 ```
 
 Then flag it: **Settings → Template repository → ✓**.
 
 Two rules that will save you an afternoon:
 
-1. **Stubs must `raise`, not `pass`.** A `pass` stub returns `None`, so "hasn't
-   started" and "got it wrong" look identical in the gradebook.
+1. **Incomplete stubs should throw `NotImplementedException`.** This makes an
+   unfinished method fail clearly instead of returning a plausible default.
 2. **Visibility.** Public always works. Private works only if it is *inside*
    your organization. A private template outside the org is rejected.
 
 **Don't build one from scratch the first time.** Use **this repository**: hit
 *Use this template* on
-[cecs-golden-template-python](https://github.com/Giacalone-CECS/cecs-golden-template-python).
+[cecs-golden-template-csharp](https://github.com/csulb-cecs-demo/cecs-golden-template-csharp).
 It has the layout, a working suite, CI, and a Verification Log, and every file
 carries `FACULTY:` comments explaining why it's shaped that way. See
-[the repo README](../README.md) for what to keep and what to change.
+[the repo README](../../README.md) for what to keep and what to change.
 
 ---
 
@@ -186,7 +188,7 @@ Real example:
 ```sh
 gh teacher assignment add Giacalone-CECS cecs-378-fa26 lab-01-stats \
     --name "Lab 1 — Descriptive Statistics" \
-    --template Giacalone-CECS/cecs-golden-template-python \
+    --template csulb-cecs-demo/cecs-golden-template-csharp \
     --due 2026-09-15T23:59:00-07:00
 ```
 
@@ -217,14 +219,10 @@ the step beginners skip.
 
 ```sh
 gh teacher assignment test add <org> <classroom> <slug> \
-    --name "module imports" --type run \
-    --run 'python3 -c "import src.stats"' --points 1
-
-gh teacher assignment test add <org> <classroom> <slug> \
-    --name "pytest suite" --type python \
-    --setup "python3 -m pip install --quiet -r requirements.txt" \
-    --run "python3 -m pytest -q tests/test_stats.py" \
-    --timeout 120 --points 12
+    --name "xUnit suite" --type run \
+    --setup "dotnet restore golden-template-csharp.sln && dotnet build golden-template-csharp.sln --configuration Release --no-restore" \
+    --run "dotnet test --solution golden-template-csharp.sln --configuration Release --no-build" \
+    --timeout 120 --points 10
 ```
 
 Check it landed:
@@ -233,10 +231,9 @@ Check it landed:
 gh teacher assignment test list <org> <classroom> <slug>
 ```
 
-Two tests, 13 points. The suite's 12 points are **split across its cases**
-automatically: 9 of 12 passing scores 9. The 1-point import test exists so
-that a broken import is reported as "your module doesn't import" instead of
-twelve confusing downstream errors.
+One run test, 10 points. A `run` test is all-or-nothing: the build and complete
+xUnit suite must pass to earn the points. Classroom 50's case-by-case `python`
+test type is specific to pytest, so C# assignments use a run command.
 
 Full detail on test types and weighting:
 **[Writing tests with the CLI](writing-tests.md)**.
@@ -305,6 +302,6 @@ with the org selected and re-run `gh teacher init`.
 |---|---|
 | Write more interesting tests | [Writing tests with the CLI](writing-tests.md) |
 | Diagnose something broken | [Troubleshooting](troubleshooting.md) |
-| Adapt this template to your course | [Template README](../README.md) |
+| Adapt this template to your course | [Template README](../../README.md) |
 | Look up a `gh teacher` command | [CLI Teacher Guide](https://github.com/foundation50/classroom50/wiki/CLI-Teacher-Guide) |
 | Grade something declarative tests can't express | [Autograders wiki](https://github.com/foundation50/classroom50/wiki/Autograders) |

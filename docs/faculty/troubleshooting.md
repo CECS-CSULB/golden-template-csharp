@@ -77,21 +77,22 @@ and the workflow finished.
 
 ---
 
-## Students see twelve failures from one mistake
+## The xUnit suite never starts
 
-**Cause.** A broken import or syntax error. pytest can't collect, reports zero
-cases, and the runner falls back to all-or-nothing exit-code scoring.
+**Cause.** Restore or compilation failed before the test host could run. In a
+C# assignment this is normally a missing .NET 10 SDK, a NuGet restore problem,
+or a compiler error.
 
-**Fix.** Add a cheap `run` test ahead of the suite:
+**Confirm it.** Run the same setup commands locally and read the first error:
 
 ```sh
-gh teacher assignment test add <org> <classroom> <slug> \
-    --name "module imports" --type run \
-    --run 'python3 -c "import src.yourmodule"' --points 1
+dotnet restore golden-template-csharp.sln
+dotnet build golden-template-csharp.sln --configuration Release --no-restore
 ```
 
-It doesn't change the score much. It changes the *message* from twelve confusing
-errors to "your module doesn't import."
+**Fix.** Correct the SDK, package, or compiler problem. Keep build in the
+grader's setup command so students see a specific build failure instead of a
+generic test-process error.
 
 ---
 
@@ -117,8 +118,8 @@ the assignment text.
 
 ## Tests time out
 
-**Cause.** The default timeout is **10 seconds**, and it covers `--setup`. Any
-test doing `pip install` will blow through it.
+**Cause.** The default timeout is **10 seconds**, and it covers `--setup`. A
+cold NuGet restore and solution build can exceed it.
 
 **Fix.** `--timeout 120`. Range is 1–600.
 
@@ -179,14 +180,18 @@ gh run list -R <org>/classroom50 -w "Collect Scores" -L 1
 
 ## The template repo's own CI is red
 
-> [!NOTE]
-> **Expected, if you configured it the obvious way.** The starter is
-> unimplemented, so running the full suite against it fails.
+This repository's sample implementation and five tests should pass before it
+is adapted. Reproduce CI locally:
 
-This repository handles it with two modes keyed on the repo's `is_template`
-flag: a template asserts its suite **collects**, a student copy
-runs the **full suite**. Copy that pattern rather than deleting the workflow. A
-template with no CI can't catch a broken import before thirty students hit it.
+```sh
+dotnet restore golden-template-csharp.sln
+dotnet build golden-template-csharp.sln --configuration Release --no-restore
+dotnet test --solution golden-template-csharp.sln --configuration Release --no-build
+```
+
+When adapting the template, decide deliberately whether unfinished starter
+methods should make template CI red or whether template CI should only check
+that the solution builds. Do not delete CI merely to hide an expected failure.
 
 ---
 
